@@ -16,22 +16,16 @@ describe('GET /api/categories', () => {
         .then(({ body }) => {
             const { categories } = body;
             expect(categories).toHaveLength(4);
-        })
-    })
-    test('200: should return an array of objects each containing slug and description properties', () => {
-        return request(app)
-        .get('/api/categories')
-        .expect(200)
-        .then(({ body }) => {
-            const { categories } = body;
             categories.forEach((category) => {
-                expect(category).toMatchObject({
+            expect(category).toMatchObject({
                     slug: expect.any(String),
                     description: expect.any(String)
                 })
-            }) 
-        }) 
-    })
+        })
+    })})
+})
+
+describe('GET /*', () => {
     test('404: responds with error message when given a path that has a typo', () => {
         return request(app)
         .get('/api/catagories')
