@@ -20,8 +20,7 @@ describe('GET /api/categories', () => {
             expect(category).toMatchObject({
                     slug: expect.any(String),
                     description: expect.any(String)
-                })
-        })
+                })})
     })})
 })
 
@@ -32,6 +31,38 @@ describe('GET /*', () => {
         .expect(404)
         .then(({ body }) => {
             expect(body.message).toBe('Path not found');
+        })
+    })
+})
+
+describe.only('GET /api/reviews/:review_id', () => {
+    test('200: should return an object containing the properties of the requested review id', () => {
+        return request(app)
+        .get('/api/reviews/6')
+        .expect(200)
+        .then(({ body }) => {
+            const { review } = body;
+            review.forEach((review) => {
+                expect(review).toMatchObject({
+                    review_id: expect.any(Number),
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_body: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                })
+            })
+        })
+    })
+    test('400: should return an error message when review_id does not exist', () => {
+        return request(app)
+        .get('/api/reviews/20')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Review not found');
         })
     })
 })
