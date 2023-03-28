@@ -44,15 +44,15 @@ describe.only('GET /api/reviews/:review_id', () => {
             const { review } = body;
             review.forEach((review) => {
                 expect(review).toMatchObject({
-                    review_id: expect.any(Number),
-                    title: expect.any(String),
-                    category: expect.any(String),
-                    designer: expect.any(String),
-                    owner: expect.any(String),
-                    review_body: expect.any(String),
-                    review_img_url: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number)
+                    review_id: 6,
+                    title: 'Occaecat consequat officia in quis commodo.',
+                    category: 'social deduction',
+                    designer: 'Ollie Tabooger',
+                    owner: 'mallionaire',
+                    review_body: 'Fugiat fugiat enim officia laborum quis. Aliquip laboris non nulla nostrud magna exercitation in ullamco aute laborum cillum nisi sint. Culpa excepteur aute cillum minim magna fugiat culpa adipisicing eiusmod laborum ipsum fugiat quis. Mollit consectetur amet sunt ex amet tempor magna consequat dolore cillum adipisicing. Proident est sunt amet ipsum magna proident fugiat deserunt mollit officia magna ea pariatur. Ullamco proident in nostrud pariatur. Minim consequat pariatur id pariatur adipisicing.',
+                    review_img_url: 'https://images.pexels.com/photos/207924/pexels-photo-207924.jpeg?w=700&h=700',
+                    created_at: '2020-09-13T14:19:28.077Z',
+                    votes: 8
                 })
             })
         })
@@ -63,6 +63,14 @@ describe.only('GET /api/reviews/:review_id', () => {
         .expect(400)
         .then(({ body }) => {
             expect(body.message).toBe('Review not found');
+        })
+    })
+    test.only('400: should return an error message when review_id is invalid', () => {
+        return request(app)
+        .get('/api/reviews/banana')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Invalid ID');
         })
     })
 })

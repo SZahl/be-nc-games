@@ -9,12 +9,12 @@ exports.getCategories = (request, response) => {
     }) 
 }
 
-exports.getReviewByID = (request, response) => {
+exports.getReviewByID = (request, response, next) => {
     const { review_id } = request.params;
     fetchReviewByID(review_id).then((review) => {
         response.status(200).send({ review: review})
     })
     .catch((error) => {
-        response.status(error.status).send({ message: error.message })
+        next(error);
     })
 }
