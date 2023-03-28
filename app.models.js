@@ -8,3 +8,13 @@ exports.fetchCategories = () => {
         return rows;
     })
 }
+
+exports.fetchReviewByID = (id) => {
+    return db.query("SELECT * FROM reviews WHERE review_id = $1", [id])
+    .then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Review not found', status: 400});
+        }
+        return rows;
+    })
+}
