@@ -35,7 +35,7 @@ describe('GET /*', () => {
     })
 })
 
-describe.only('GET /api/reviews/:review_id', () => {
+describe('GET /api/reviews/:review_id', () => {
     test('200: should return an object containing the properties of the requested review id', () => {
         return request(app)
         .get('/api/reviews/6')
@@ -65,12 +65,37 @@ describe.only('GET /api/reviews/:review_id', () => {
             expect(body.message).toBe('Review not found');
         })
     })
-    test.only('400: should return an error message when review_id is invalid', () => {
+    test('400: should return an error message when review_id is invalid', () => {
         return request(app)
         .get('/api/reviews/banana')
         .expect(400)
         .then(({ body }) => {
             expect(body.message).toBe('Invalid ID');
+        })
+    })
+})
+
+describe('GET /api/reviews', () => {
+    test('200: should return a reviews array containing all available review objects, each containing the following properties', () => {
+        return request(app)
+        .get('/api/reviews')
+        .expect(200)
+        .then(({ body }) => {
+            const { reviews } = body;
+            expect(reviews).toHaveLength(13);
+            reviews.forEach((review) => {
+                expect(review).toMatchObject({
+                    review_id: expect.any(Number),
+                    title: expect.any(String),
+                    category: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_body: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                })
+            })
         })
     })
 })

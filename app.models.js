@@ -15,6 +15,16 @@ exports.fetchReviewByID = (id) => {
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'Review not found', status: 400});
         }
-        return rows;
+        return result.rows;
+    })
+}
+
+exports.fetchAllReviews = () => {
+    return db.query("SELECT * FROM reviews")
+    .then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Error', status: 404 })
+        } 
+        return result.rows;
     })
 }
