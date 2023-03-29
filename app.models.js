@@ -20,7 +20,7 @@ exports.fetchReviewByID = (id) => {
 }
 
 exports.fetchAllReviews = () => {
-    return db.query("SELECT * FROM reviews")
+    return db.query("SELECT * FROM reviews ORDER BY created_at DESC")
     .then((result) => {
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'Error', status: 404 })

@@ -98,4 +98,13 @@ describe('GET /api/reviews', () => {
             })
         })
     })
+    test('200: should return reviews sorted by date in descending order', () => {
+        return request(app)
+        .get('/api/reviews')
+        .expect(200)
+        .then(({ body }) => {
+            const { reviews } = body;
+            expect(reviews).toBeSortedBy("created_at", { descending: true})
+        })
+    })
 })
