@@ -20,7 +20,7 @@ exports.fetchReviewByID = (id) => {
 }
 
 exports.fetchAllReviews = () => {
-    return db.query("SELECT * FROM reviews ORDER BY created_at DESC")
+    return db.query("SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id GROUP BY reviews.review_id ORDER BY created_at DESC;")
     .then((result) => {
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'Error', status: 404 })
