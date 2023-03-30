@@ -34,7 +34,6 @@ exports.fetchCommentsByReviewID = (id) => {
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'This review has no comments yet!', status: 200 })
         }
-        // console.log(result.rows)
         return result.rows;
     })
 }
