@@ -109,3 +109,60 @@ describe('GET /api/reviews', () => {
         })
     })
 })
+
+describe('GET /api/reviews/:review_id/comments', () => {
+    test('200: should return an array of comment objects, each containing these properties', () => {
+        return request(app)
+        .get('/api/reviews/2/comments')
+        .expect(200)
+        .then(({ body }) => {
+            const { comments } = body;
+            expect(comments).toHaveLength(3);
+            comments.forEach((comment) => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    review_id: 2
+
+                })
+            })
+        })
+    })
+    test('200: should return comments ordered by most recent first', () => {
+        return request(app)
+        .get('/api/reviews/3/comments')
+        .expect(200)
+        .then(({ body }) => {
+            const { comments } = body;
+            expect(comments).toBeSortedBy("created_at", { descending: true})
+        })
+    })
+    test('200: should return message when searched review has no comments', () => {
+        return request(app)
+        .get('/api/reviews/1/comments')
+        .expect(200)
+        .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe('This review has no comments yet!');
+        })
+    })
+    test('404: should return an error message when review_id does not exist', () => {
+        return request(app)
+        .get('/api/reviews/26/comments')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.message).toBe('Review not found');
+        })
+    })
+    test('400: should return an error message when review_id is invalid', () => {
+        return request(app)
+        .get('/api/reviews/onion')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Invalid ID');
+        })
+    })
+})
