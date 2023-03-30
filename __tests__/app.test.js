@@ -125,7 +125,7 @@ describe('GET /api/reviews/:review_id/comments', () => {
                     created_at: expect.any(String),
                     author: expect.any(String),
                     body: expect.any(String),
-                    review_id: expect.any(Number)
+                    review_id: 2
 
                 })
             })
@@ -140,10 +140,19 @@ describe('GET /api/reviews/:review_id/comments', () => {
             expect(comments).toBeSortedBy("created_at", { descending: true})
         })
     })
-    test('400: should return an error message when review_id does not exist', () => {
+    test('200: should return message when searched review has no comments', () => {
+        return request(app)
+        .get('/api/reviews/1/comments')
+        .expect(200)
+        .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe('This review has no comments yet!');
+        })
+    })
+    test('404: should return an error message when review_id does not exist', () => {
         return request(app)
         .get('/api/reviews/26/comments')
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
             expect(body.message).toBe('Review not found');
         })
@@ -156,5 +165,4 @@ describe('GET /api/reviews/:review_id/comments', () => {
             expect(body.message).toBe('Invalid ID');
         })
     })
-
 })

@@ -32,8 +32,18 @@ exports.fetchAllReviews = () => {
 exports.fetchCommentsByReviewID = (id) => {
     return db.query("SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC" , [id]).then((result) => {
         if (result.rowCount === 0) {
-            return Promise.reject({ message: 'Review not found', status: 400 })
+            return Promise.reject({ message: 'This review has no comments yet!', status: 200 })
         }
+        // console.log(result.rows)
         return result.rows;
+    })
+}
+
+exports.checkReviewExists = (id) => {
+    return db.query("SELECT * FROM reviews WHERE review_id = $1", [id])
+    .then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Review not found', status: 404 })
+        }
     })
 }

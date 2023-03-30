@@ -1,4 +1,4 @@
-const { fetchCategories, fetchReviewByID, fetchAllReviews, fetchCommentsByReviewID } = require('./app.models.js');
+const { fetchCategories, fetchReviewByID, fetchAllReviews, fetchCommentsByReviewID, checkReviewExists } = require('./app.models.js');
 
 exports.getCategories = (request, response) => {
     fetchCategories().then((categories) => {
@@ -30,8 +30,12 @@ exports.getAllReviews = (request, response, next) => {
 
 exports.getCommentsByReviewID = (request, response, next) => {
     const { review_id } = request.params;
-    fetchCommentsByReviewID(review_id).then((comments) => {
-        response.status(200).send({ comments: comments})
+
+    const reviewCommentsPromises = [checkReviewExists(review_id), fetchCommentsByReviewID(review_id)];
+
+    Promise.all(reviewCommentsPromises)
+    .then((comments) => {
+        response.status(200).send({ comments: comments[1]})
     })
     .catch((error) => {
         next(error);
