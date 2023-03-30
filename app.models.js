@@ -28,3 +28,12 @@ exports.fetchAllReviews = () => {
         return result.rows;
     })
 }
+
+exports.fetchCommentsByReviewID = (id) => {
+    return db.query("SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC" , [id]).then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Review not found', status: 400 })
+        }
+        return result.rows;
+    })
+}
