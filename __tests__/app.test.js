@@ -166,3 +166,82 @@ describe('GET /api/reviews/:review_id/comments', () => {
         })
     })
 })
+
+describe('POST /api/reviews/:review_id/comments', () => {
+    test('201: should return the posted comment with these added properties', () => {
+        const comment = {
+            username: "mallionaire",
+            body: "More of this!"
+        }
+        return request(app)
+        .post('/api/reviews/1/comments')
+        .send(comment)
+        .expect(201)
+        .then(({ body }) => {
+            const { comment } = body;
+            expect(comment).toMatchObject({
+                comment_id: 7,
+                body: 'More of this!',
+                votes: 0,
+                author: 'mallionaire',
+                review_id: 1,
+                created_at: expect.any(String)
+            })
+        })
+    })
+    test('400: responds with an error message when missing input', () => {
+        const comment = {
+            username: "mallionaire"
+        }
+        return request(app)
+        .post('/api/reviews/1/comments')
+        .send(comment)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Missing username and/or comment')
+        })
+    })
+    test('404: should respond with an error message when username is not found', () => {
+        const comment = {
+            username: 'nayad',
+            body: 'I totally agree!'
+        }
+        return request(app)
+        .post('/api/reviews/1/comments')
+        .send(comment)
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.message).toBe('Username not found')
+        })
+    })
+    test('400: should respond with an error message when review_id is invalid', () => {
+        const comment = {
+            username: "mallionaire",
+            body: "More of this!"
+        }
+        return request(app)
+        .post('/api/reviews/chair/comments')
+        .send(comment)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Invalid ID')
+        })
+    })
+    test('404: should respond with an error when review_id does not exist', () => {
+        const comment = {
+            username: "mallionaire",
+            body: "More of this!"
+        }
+        return request(app)
+        .post('/api/reviews/1000/comments')
+        .send(comment)
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.message).toBe('Review not found')
+        })
+    })
+})
+
+
+
+// Passing tests, pushed to GitHub, need a /nchelp pr sending

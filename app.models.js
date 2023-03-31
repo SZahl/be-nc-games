@@ -46,3 +46,21 @@ exports.checkReviewExists = (id) => {
         }
     })
 }
+
+exports.insertComment = (requestBody, reviewID) => {
+    const { username, body } = requestBody;
+    if(!username || !body) {
+        return Promise.reject({ message: 'Missing username and/or comment', status: 400 })
+    }
+    return db.query("INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING *;", [body, username, reviewID])
+    .then(({ rows }) => rows[0])
+}
+
+exports.checkUserExists = (id) => {
+    return db.query("SELECT * FROM users WHERE username = $1", [id])
+    .then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Username not found', status: 404 })
+        }
+    })
+}
