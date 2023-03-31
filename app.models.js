@@ -75,3 +75,16 @@ exports.amendVoteCount = (requestBody, id) => {
 
     })
 }
+
+exports.removeCommentByID = (id) => {
+    return db.query("DELETE FROM comments WHERE comment_id = $1", [id])
+}
+
+exports.checkCommentExists = (id) => {
+    return db.query("SELECT * FROM comments WHERE comment_id = $1", [id])
+    .then((result) => {        
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Comment not found', status: 404 })
+        }
+    })
+}

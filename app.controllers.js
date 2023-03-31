@@ -1,4 +1,4 @@
-const { fetchCategories, fetchReviewByID, fetchAllReviews, fetchCommentsByReviewID, checkReviewExists, insertComment, checkUserExists, amendVoteCount } = require('./app.models.js');
+const { fetchCategories, fetchReviewByID, fetchAllReviews, fetchCommentsByReviewID, checkReviewExists, insertComment, checkUserExists, amendVoteCount, removeCommentByID, checkCommentExists } = require('./app.models.js');
 
 exports.getCategories = (request, response) => {
     fetchCategories().then((categories) => {
@@ -63,6 +63,20 @@ exports.updateVoteCount = (request, response, next) => {
     .then((result) => {
         const review = result[1].rows[0];
         response.status(201).send({ review: review})
+    })
+    .catch((error) => {
+        next(error)
+    })
+}
+
+exports.deleteCommentByID = (request, response, next) => {
+    const { comment_id } = request.params;
+
+    const deleteCommentPromises = [checkCommentExists(comment_id), removeCommentByID(comment_id)]
+
+    Promise.all(deleteCommentPromises)
+    .then(() => {
+        response.status(204).send({ message: 'No content'});
     })
     .catch((error) => {
         next(error)
