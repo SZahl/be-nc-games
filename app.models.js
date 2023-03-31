@@ -67,9 +67,7 @@ exports.checkUserExists = (id) => {
 
 exports.amendVoteCount = (requestBody, id) => {
     const { inc_votes } = requestBody;
-    if (typeof inc_votes !== 'number' || !inc_votes) {
-        return Promise.reject({ message: 'Invalid input', status: 400 });
-    }
+
     return db.query("SELECT votes FROM reviews WHERE review_id = $1", [id])
     .then(({ rows }) => {
         const updatedVoteCount = inc_votes + rows[0].votes;
