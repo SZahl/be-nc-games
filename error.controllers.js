@@ -3,7 +3,7 @@ exports.handleErrorCodes = (error, request, response, next) => {
     if (error.code === '22P02') {
         response.status(400).send({ message: 'Invalid ID'})
     } else if (error.code === '23502') {
-        response.status(422).send({ message: 'Missing username and/or comment'})
+        response.status(400).send({ message: 'Missing username and/or comment'})
     } else {
         next(error);
     }

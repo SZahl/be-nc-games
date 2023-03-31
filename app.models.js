@@ -50,9 +50,9 @@ exports.checkReviewExists = (id) => {
 exports.insertComment = (requestBody, reviewID) => {
     const { username, body } = requestBody;
     if(!username || !body) {
-        return Promise.reject({ message: 'Missing username and/or comment', status: 422 })
+        return Promise.reject({ message: 'Missing username and/or comment', status: 400 })
     }
-    return db.query("INSERT INTO comments (body, votes, author, review_id) VALUES ($1, $2, $3, $4) RETURNING *;", [body, 0, username, reviewID])
+    return db.query("INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING *;", [body, username, reviewID])
     .then(({ rows }) => rows[0])
 }
 

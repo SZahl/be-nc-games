@@ -189,14 +189,14 @@ describe('POST /api/reviews/:review_id/comments', () => {
             })
         })
     })
-    test('422: responds with an error message when missing input', () => {
+    test('400: responds with an error message when missing input', () => {
         const comment = {
             username: "mallionaire"
         }
         return request(app)
         .post('/api/reviews/1/comments')
         .send(comment)
-        .expect(422)
+        .expect(400)
         .then(({ body }) => {
             expect(body.message).toBe('Missing username and/or comment')
         })
@@ -241,3 +241,7 @@ describe('POST /api/reviews/:review_id/comments', () => {
         })
     })
 })
+
+
+
+// Passing tests, pushed to GitHub, need a /nchelp pr sending
