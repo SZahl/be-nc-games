@@ -327,19 +327,26 @@ describe('PATCH /api/reviews/:review_id', () => {
     })
 })
 
-/*
-Request body accepts:
-
-    an object in the form { inc_votes: newVote }
-
-    newVote will indicate how much the votes property in the database should be updated by
-    e.g.
-
-{ inc_votes : 1 } would increment the current review's vote property by 1
-
-{ inc_votes : -100} would decrement the current review's vote property by 100
-
-Responds with:
-
-    the updated review
-*/
+describe('DELETE /api/comments/:comment_id', () => {
+    test('204: should delete the given comment by comment_id', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    })
+    test('400: responds with an error message when comment_id is invalid', () => {
+        return request(app)
+        .delete('/api/comments/cushion')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Invalid input')
+        })
+    })
+    test('404: responds with an error message when review_id does not exist', () => {
+        return request(app)
+        .delete('/api/comments/100')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.message).toBe('Comment not found')
+        })
+    })
+})
