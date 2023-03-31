@@ -50,7 +50,7 @@ exports.checkReviewExists = (id) => {
 exports.insertComment = (requestBody, reviewID) => {
     const { username, body } = requestBody;
     if(!username || !body) {
-        return Promise.reject({ message: 'Missing username and/or comment', status: 400 })
+        return Promise.reject({ message: 'Missing input', status: 400 })
     }
     return db.query("INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING *;", [body, username, reviewID])
     .then(({ rows }) => rows[0])
@@ -62,5 +62,16 @@ exports.checkUserExists = (id) => {
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'Username not found', status: 404 })
         }
+    })
+}
+
+exports.amendVoteCount = (requestBody, id) => {
+    const { inc_votes } = requestBody;
+
+    return db.query("SELECT votes FROM reviews WHERE review_id = $1", [id])
+    .then(({ rows }) => {
+        const updatedVoteCount = inc_votes + rows[0].votes;
+        return db.query("UPDATE reviews SET votes = $1 WHERE review_id = $2 RETURNING *", [updatedVoteCount, id])
+
     })
 }
