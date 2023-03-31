@@ -70,7 +70,7 @@ describe('GET /api/reviews/:review_id', () => {
         .get('/api/reviews/banana')
         .expect(400)
         .then(({ body }) => {
-            expect(body.message).toBe('Invalid ID');
+            expect(body.message).toBe('Invalid input');
         })
     })
 })
@@ -162,7 +162,7 @@ describe('GET /api/reviews/:review_id/comments', () => {
         .get('/api/reviews/onion')
         .expect(400)
         .then(({ body }) => {
-            expect(body.message).toBe('Invalid ID');
+            expect(body.message).toBe('Invalid input');
         })
     })
 })
@@ -198,7 +198,7 @@ describe('POST /api/reviews/:review_id/comments', () => {
         .send(comment)
         .expect(400)
         .then(({ body }) => {
-            expect(body.message).toBe('Missing username and/or comment')
+            expect(body.message).toBe('Missing input')
         })
     })
     test('404: should respond with an error message when username is not found', () => {
@@ -224,7 +224,7 @@ describe('POST /api/reviews/:review_id/comments', () => {
         .send(comment)
         .expect(400)
         .then(({ body }) => {
-            expect(body.message).toBe('Invalid ID')
+            expect(body.message).toBe('Invalid input')
         })
     })
     test('404: should respond with an error when review_id does not exist', () => {
@@ -242,6 +242,75 @@ describe('POST /api/reviews/:review_id/comments', () => {
     })
 })
 
+describe('PATCH /api/reviews/:review_id', () => {
+    test('201: should return the review with the updated amount of votes', () => {
+        const vote = { inc_votes: 10 };
+        return request(app)
+        .patch('/api/reviews/2')
+        .send(vote)
+        .expect(201)
+        .then(({ body }) => {
+            const { review } = body;
+            console.log(review)
+            expect(review).toMatchObject({
+                review_id: 2,
+                title: 'Jenga',
+                category: 'dexterity',
+                designer: 'Leslie Scott',
+                owner: 'philippaclaire9',
+                review_body: 'Fiddly fun for all the family',
+                review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
+                created_at: '2021-01-18T10:01:41.251Z',
+                votes: 15
+            });
+        })
+    })
+    test('400: responds with an error message when passed incorrect input', () => {
+        const vote = { inc_votes: 'candle' };
+        return request(app)
+        .patch('/api/reviews/2')
+        .send(vote)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Invalid input')
+        })
+    })
+    test('400: responds with an error message when passed missing input', () => {
+        const vote = {};
+        return request(app)
+        .patch('/api/reviews/2')
+        .send(vote)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.message).toBe('Invalid input')
+        })
+    })
+    test('400: responds with an error message when review_id is invalid', () => {
+        const vote = { inc_votes: 10 };
+        return request(app)
+        .patch('/api/reviews/200')
+        .send(vote)
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.message).toBe('Review not found')
+        })
+    })
+    // test('400: responds with an error message when review_id does not exist')
+})
 
+/*
+Request body accepts:
 
-// Passing tests, pushed to GitHub, need a /nchelp pr sending
+    an object in the form { inc_votes: newVote }
+
+    newVote will indicate how much the votes property in the database should be updated by
+    e.g.
+
+{ inc_votes : 1 } would increment the current review's vote property by 1
+
+{ inc_votes : -100} would decrement the current review's vote property by 100
+
+Responds with:
+
+    the updated review
+*/
