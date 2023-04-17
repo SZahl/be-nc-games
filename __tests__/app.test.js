@@ -432,7 +432,4 @@ The end point should also accept the following queries:
 
     - sort_by, which sorts the articles by any valid column (defaults to date)
     - order, which can be set to asc or desc for ascending or descending (defaults to descending)
-
-
-
 */
