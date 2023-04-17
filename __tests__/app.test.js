@@ -350,3 +350,89 @@ describe('DELETE /api/comments/:comment_id', () => {
         })
     })
 })
+
+describe('GET /api/users', () => {
+    test('200: should return a users array containing all available users objects, each containing the following properties', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({ body }) => {
+            const { users } = body;
+            expect(users).toHaveLength(4);
+            users.forEach((user) => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+        })
+    })
+    })
+
+describe('GET /api/reviews (queries)', () => {
+    test('200: should return a reviews array containing all reviews matching queried catergory when there is one result', () => {
+        return request(app)
+        .get('/api/reviews?category=dexterity')
+        .expect(200)
+        .then(({ body }) => {
+            const { reviews } = body;
+            expect(reviews).toHaveLength(1);
+            reviews.forEach((review) => {
+                expect(review).toMatchObject({
+                    title: 'Jenga',
+                    designer: 'Leslie Scott',
+                    owner: 'philippaclaire9',
+                    review_img_url:
+                      'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
+                    review_body: 'Fiddly fun for all the family',
+                    category: 'dexterity',
+                    created_at: "2021-01-18T10:01:41.251Z",
+                    votes: 5
+                })
+            })
+        })
+    })
+    test('200: should return a reviews array containing all reviews matching queried category when there are multiple results', () => {
+        return request(app)
+        .get('/api/reviews?category=social+deduction')
+        .expect(200)
+        .then(({ body }) => {
+            const { reviews } = body;
+            expect(reviews).toHaveLength(11);
+            reviews.forEach((review) => {
+                expect(review).toMatchObject({
+                    title: expect.any(String),
+                    designer: expect.any(String),
+                    owner: expect.any(String),
+                    review_img_url: expect.any(String),
+                    review_body: expect.any(String),
+                    category: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+                })
+            })
+        })
+    })
+    // test.only('200: should return a reviews array sorted by a valid column', () => {
+    //     return request(app)
+    //     .get('/api/reviews?sort_by=owner')
+    //     .expect(200)
+    //     .then(({ body }) => {
+    //         const { reviews } = body;
+    //         expect(reviews).toHaveLength(13);
+    //         expect(reviews).toBeSortedBy("owner", { descending: true})
+    //     })
+    // })
+})
+
+/*
+FEATURE REQUEST
+The end point should also accept the following queries:
+
+    - sort_by, which sorts the articles by any valid column (defaults to date)
+    - order, which can be set to asc or desc for ascending or descending (defaults to descending)
+
+
+
+*/
