@@ -19,9 +19,32 @@ exports.fetchReviewByID = (id) => {
     })
 }
 
-exports.fetchAllReviews = () => {
-    return db.query("SELECT reviews.*, COUNT(comments.comment_id):: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id GROUP BY reviews.review_id ORDER BY created_at DESC;")
+exports.fetchAllReviews = (query) => {
+
+    let reviewQueryString = `SELECT reviews.*, COUNT(comments.comment_id):: INT AS comment_count FROM reviews LEFT JOIN comments ON comments.review_id = reviews.review_id`
+
+    const queryParameters = [];
+
+    if (query.category) {
+        queryParameters.push(query.category);
+        reviewQueryString += ` WHERE category = $1`;
+    }
+
+    reviewQueryString += ` GROUP BY reviews.review_id`;
+
+    if (query.sort_by) {
+        queryParameters.push(query.sort_by);
+        reviewQueryString += ` ORDER BY $${queryParameters.length} ASC`;
+    } else {
+        reviewQueryString += ` ORDER BY created_at DESC`
+    }
+
+    // console.log(reviewQueryString);
+    // console.log(queryParameters);
+
+    return db.query(reviewQueryString, queryParameters)
     .then((result) => {
+        console.log(result.rows);
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'Error', status: 404 })
         } 
@@ -86,5 +109,15 @@ exports.checkCommentExists = (id) => {
         if (result.rowCount === 0) {
             return Promise.reject({ message: 'Comment not found', status: 404 })
         }
+    })
+}
+
+exports.fetchAllUsers = () => {
+    return db.query("SELECT * FROM users")
+    .then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({ message: 'Error', status: 404})
+        }
+        return result.rows;
     })
 }
